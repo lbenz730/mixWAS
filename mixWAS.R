@@ -2,7 +2,6 @@ source('helpers.R')
 source('run_regressions.R')
 source('variance_components.R')
 source('hypothesis_tests.R')
-
 ### Compute Variance and Score Component for single site
 ###
 ### snps: vector of SNPs in [0,1,2]
@@ -16,7 +15,7 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, types = NULL) {
   
   ### Infer Phenotypes if types not supplied
   if(any(is.null(types))) {
-    types <- infer_types(phenotypes)
+    types <- unlist(infer_types(phenotypes))
   }
   
   ### number of phenotypes at site
@@ -105,7 +104,7 @@ mixWAS <- function(snps, phenotypes, covariates, phenotype_index = NULL, types =
   
   ### Compute P-value for SNP
   p1 <- score_test(score, V_inv, q)
-  p2 <- max_text(score, V_inv, q)
+  p2 <- max_test(score, V_inv, q)
   p_snp <- acat(c(p1, p2))
   
   return(p_snp)

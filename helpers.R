@@ -51,3 +51,39 @@ infer_phenotype_index <- function(phenotypes) {
     return(index)
   }
 }
+
+### Functions to Build out list of covariate data sets for each phenotype
+### as well as keeping track of which datasets correspond to which phenotype
+compile_covariates <- function(covariates, covariate_map, phenotypes, q) {
+  ### If there is no covariate map then the covariate list is just 
+  ### one data set for all 
+  if(is.null(covariate_map)) {
+    index <- rep(1, q)
+    covariates <- list(covariates)
+  } else {
+    unique_datasets <- unique(covariate_map$phenotype)
+    
+    ### List of varaibles in each data set
+    variables <- purrr::map(unique_datasets, ~covariate_map$variable[covariate_map$phenotype == .x])
+    if(length(variables) > 1) {
+      variables <- c(variables[1], purrr::map(variables[-1], ~c(variables[[1]], .x)))
+    }
+    
+    ### Build Data set
+    covariates <- purrr::map(variables, ~covariates[,.x])
+    index <- rep(1, q)
+    ix <- colnames(phenotypes) %in% unique_datasets
+    index[ix] <- purrr::map_dbl(colnames(phenotypes)[ix], ~which(unique_datasets == .x))
+  }
+  
+  ### One Hot Encoding if Needed
+  for(i in 1:length(covariates)) {
+    data <- covariates[[i]]
+    if(is.data.frame(data)) {
+      covariates[[i]] <- as.matrix(fastDummies::dummy_cols(data, remove_first_dummy = T, remove_selected_columns = T))
+    }
+  }
+  
+  return(list('index' = index,
+              'covariates' = covariates))
+}

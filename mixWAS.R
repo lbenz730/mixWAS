@@ -6,9 +6,10 @@ source('hypothesis_tests.R')
 ###
 ### snps: vector of SNPs in [0,1,2]
 ### phenotypes: Matrix of phenotypes (one per column)
-### covariates: list of matrices, each corresponding to a set of site-specific, pheno-type specific covariates
+### covariates: matrix or data frame of covariates
 ### types: vector specifies the type of phenotype (e.g. continuous, binary, count), will be infered if NULL
-mixWAS_single_site <- function(snps, phenotypes, covariates, types = NULL) {
+### covariate_map: by default assumes all covariates are to be used for each phenotype
+mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NULL, types = NULL) {
   ### Missing-ness (code as numeric to be 0 for each math but keep track of which are NA)
   Delta <- 1 - is.na(phenotypes) 
   phenotypes[is.na(phenotypes)] <- 0
@@ -21,19 +22,25 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, types = NULL) {
   ### number of phenotypes at site
   q <- ncol(phenotypes) 
   
+  ### Build list of all unique data sets needed
+  ### Handle one hot encoding of character variables
+  covariate_info <- compile_covariates(covariates, covariate_map, phenotypes, q)
+  covariates <- covariate_info$covariates
+  covariate_index <- covariate_info$index
+  
   ### Run all regressions of reduced models
-  gamma_list <- run_regressions(snps, phenotypes, covariates, Delta, types)
+  gamma_list <- run_regressions(snps,phenotypes, covariates, covariate_index, Delta, types)
   
   ### Compute Score for all phenotypes at site
-  score <- compute_site_score(snps, phenotypes, covariates, gamma_list, Delta, types)
+  score <- compute_site_score(snps, phenotypes, covariates, covariate_index, gamma_list, Delta, types)
   
   ### Compute computes necessary to build variance matrix
   ## Hessian
-  hessian_list <- get_hessian_components(snps, covariates, gamma_list, types)
+  hessian_list <- get_hessian_components(snps, covariates, covariate_index, gamma_list, types)
   
   ## Score Squared
   # First get each phenotype X/Z score components
-  ss_components <- get_score_square_components(snps, phenotypes, covariates, gamma_list, Delta, types)
+  ss_components <- get_score_square_components(snps, phenotypes, covariates, covariate_index, gamma_list, Delta, types)
   
   # Next actually compute the score squared for each unique pair
   indices <- 
@@ -57,15 +64,15 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, types = NULL) {
 ### phenotypes: list of matrices (one per site) of phenotypes (one phenotype per column)
 ### covariates: list of matrices, each corresponding to a set of site-specific, pheno-type specific covariates
 ### types: vector specifies the type of phenotype (e.g. continuous, binary, count), will be inferred if NULL
-mixWAS <- function(snps, phenotypes, covariates, phenotype_index = NULL, types = NULL) {
+mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype_index = NULL, types = NULL) {
   ### Handle the case of single site 
-  if(all(class(snps) != 'list')) {
+  if(is.list(snps)) {
     snps <- list(snps)
   } 
-  if(all(class(phenotypes) != 'list')) {
+  if(is.list(phenotypes)) {
     phenotypes <- list(phenotypes)
   }
-  if(all(class(covariates) != 'list')) {
+  if(is.list(covariates)) {
     covariates <- list(covariates)
   }
   
@@ -88,6 +95,7 @@ mixWAS <- function(snps, phenotypes, covariates, phenotype_index = NULL, types =
     purrr::map(1:num_sites, ~mixWAS_single_site(snps[[.x]],
                                                 phenotypes[[.x]],
                                                 covariates[[.x]],
+                                                covariate_map[[.x]],  
                                                 types[[.x]]))
   
   ### Build combined score/variance matrix
@@ -107,5 +115,5 @@ mixWAS <- function(snps, phenotypes, covariates, phenotype_index = NULL, types =
   p2 <- max_test(score, V_inv, q)
   p_snp <- acat(c(p1, p2))
   
-  return(p_snp)
+  return(list('p1' = p1, 'p2' = p2, 'p_snp' = p_snp))
 }

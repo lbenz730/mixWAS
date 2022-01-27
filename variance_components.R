@@ -34,11 +34,11 @@ compute_phenotype_score <- function(x, y, Z, gamma, delta, type) {
 ### Delta: vector indicating if phenotype is present (1) or missing (0)
 ### types: vector specifies the type of phenotype (e.g. continuous, binary, count)
 
-compute_site_score <- function(x, Y, Z_list, gamma_list, Delta, types) {
+compute_site_score <- function(x, Y, Z_list, Z_index, gamma_list, Delta, types) {
   score_vec <- 
     purrr::map_dbl(1:ncol(Y), ~compute_phenotype_score(x = x, 
                                                        y = Y[,.x],
-                                                       Z = Z_list[[.x]],
+                                                       Z = Z_list[[Z_index[.x]]],
                                                        gamma = gamma_list[[.x]],
                                                        delta = Delta[,.x],
                                                        type = types[.x])) 
@@ -92,11 +92,11 @@ score_squared_components <- function(x, y, Z, gamma, delta, type) {
 ### Delta: Matrix vector indicating if phenotype is present (1) or missing (0)
 ### types: vector specifies the type of phenotype (e.g. continuous, binary, count)
 
-get_score_square_components <- function(x, Y, Z_list, gamma_list, Delta, types) {
+get_score_square_components <- function(x, Y, Z_list, Z_index, gamma_list, Delta, types) {
   ss_components <- 
     purrr::map(1:ncol(Y), ~score_squared_components(x = x,
                                                     y = Y[,.x],
-                                                    Z = Z_list[[.x]],
+                                                    Z = Z_list[[Z_index[.x]]],
                                                     gamma = gamma_list[[.x]],
                                                     delta = Delta[,.x],
                                                     type = types[.x]))
@@ -178,10 +178,10 @@ compute_hessian <- function(x, Z, gamma, type) {
 ### gamma_list: list of coefficient vectors, each corresponding to a set of site-specific, pheno-type specific covariates
 ### types: vector specifies the type of phenotype (e.g. continuous, binary, count)
 
-get_hessian_components <- function(x, Z_list, gamma_list, types) {
+get_hessian_components <- function(x, Z_list, Z_index, gamma_list, types) {
   hessian_list <- 
-    purrr::map(1:length(Z_list), ~compute_hessian(x = x, 
-                                                  Z = Z_list[[.x]],
+    purrr::map(1:length(gamma_list), ~compute_hessian(x = x, 
+                                                  Z = Z_list[[Z_index[.x]]],
                                                   gamma = gamma_list[[.x]],
                                                   type = types[.x])) 
   return(hessian_list)

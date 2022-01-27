@@ -6,8 +6,9 @@ score_test <- function(score, V_inv, q) {
 }
 
 max_test <- function(score, V_inv, q) {
-  t2 <- max(score^2 * diag(V_inv))
-  p2 <- exp(q * pchisq(t2, df = q, lower.tail = F, log.p = T))
+  V_inv_sqrt <- expm::sqrtm(V_inv)
+  t2 <- max(abs(V_inv_sqrt %*% score))^2
+  p2 <- 1 - exp(q * pchisq(t2, df = 1, log.p = T))
   return(p2)
 }
 

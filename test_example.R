@@ -4,8 +4,8 @@
 source('mixWAS.R')
 library(magrittr)
 
-future::plan(future::multicore(workers = 15))
-options(future.fork.enable = T)
+# future::plan(future::multicore(workers = 15))
+# options(future.fork.enable = T)
 set.seed(123)
 
 ### Parameters
@@ -62,22 +62,22 @@ snps <- purrr::map(n_k, ~{rbinom(.x, 1, 1-maf) + rbinom(.x, 1, 1-maf)})
 binary <- 
   purrr::map(n_k, function(n){
     purrr::map2_dfc(1:q_bin, prevelance, ~rbinom(n, 1, .y)) %>% 
-      set_names(paste0('Y', 1:q_bin))
+      set_names(paste0('Y', q_con + 1:q_bin))
   })
 
 continuous <- 
   purrr::map(n_k, function(n) {
     purrr::map_dfc(1:q_con, ~rnorm(n)) %>% 
-      set_names(paste0('Y', q_bin + 1:q_con))
+      set_names(paste0('Y', 1:q_con))
   })
 
 phenotypes <- purrr::map(1:num_sites, ~{
-  df <- dplyr::bind_cols(binary[[.x]], continuous[[.x]])
+  df <- dplyr::bind_cols(continuous[[.x]], binary[[.x]])
   ### Randomly Have a few of the phenotypes be missing 
   na_ind <- matrix(runif(nrow(df) * ncol(df)), ncol = ncol(df)) < na_freq
   df[na_ind] <- NA
   # Randomly choose q_k phenotypes in the site
-  df <- df[,sample(1:q, q_k[.x])]
+  # df <- df[,sample(1:q, q_k[.x])]
   as.matrix(df)
 })
 
@@ -89,23 +89,34 @@ covariates <-
       as.matrix()
   })
 
-### Make list of a few covariates for each phenotype
-covariates <- 
-  purrr::map2(covariates, q_k, function(M, qk) { 
-    purrr::map(1:qk, ~M[, sample(1:ncol(M), sample(2:ncol(M), 1))])
-  })
+# ### Make list of a few covariates for each phenotype
+# covariates <- 
+#   purrr::map2(covariates, q_k, function(M, qk) { 
+#     purrr::map(1:qk, ~M[, sample(1:ncol(M), sample(2:ncol(M), 1))])
+#   })
 
-# mixWAS_single_site(snps = snps[[1]], 
-#                    phenotypes = phenotypes[[1]],
-#                    covariates = covariates[[1]])
-# 
-# mixWAS_single_site(snps = snps[[2]], 
+out_new <- 
+  mixWAS_single_site(snps = snps[[1]],
+                     phenotypes = phenotypes[[1]],
+                     covariates = covariates[[1]])
+
+# mixWAS_single_site(snps = snps[[2]],
 #                    phenotypes = phenotypes[[2]],
 #                    covariates = covariates[[2]])
+# 
+# t0 <- Sys.time()
+# mixWAS(snps, phenotypes, covariates)                    
+# t1 <- Sys.time()                  
+# t1-t0
 
-t0 <- Sys.time()
-mixWAS(snps, phenotypes, covariates)                    
-t1 <- Sys.time()                  
-t1-t0
 
+X_site1 <- snps[[1]]
+Y_site1 <- phenotypes[[1]]
+Delta_site1 <- 1 - is.na(Y_site1) 
+Y_site1[is.na(Y_site1)] <- 999
+Zlist_site1 <- purrr::map(1:q, ~covariates[[1]])
 
+out_old <- run.each.site(X_site1,Y_site1,Zlist_site1,Delta_site1,q1=q_con)
+
+out_new$score - out_old[[1]]
+all(abs(out_new$V - out_old[[2]]) < 1e-12)

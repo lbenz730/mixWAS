@@ -60,7 +60,7 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NUL
 }
 
 
-#' mixWAS Algorithm for All Sites (if all data can be supplied at once
+#' mixWAS Algorithm for All Sites (if all data can be supplied at once)
 #' @param snps: list of snps (one for each site), each a vector of SNPs in [0,1,2]
 #' @param phenotypes: list of phenotypes, each a matrix of phenotypes (one per column), with names of phenotypes specified as column names
 #' @param covariates: list of covariates, each a matrix or data frame of covariates
@@ -68,6 +68,8 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NUL
 #' If specifying for all sites and just need some sites with complex build instruction (not all phenotypes use all covariates)
 #' then supply a list of length = # of sites, entries = NULL for default behavior, and a data frame like object of instructions if needed.
 #' See `mixWAS_single_site` help page for more information.
+#' @param phenotype_index: list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If NULL (default), will be
+#' infered from matrix colnames.
 #' @param types: list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.
 #' @return p-value of aggregate test
@@ -97,6 +99,8 @@ mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype
     phenotype_index <- infer_phenotype_index(phenotypes)
   }
 
+  ### # of phenotypes
+  q <- max(unlist(phenotype_index))
 
   ### Compute Score and Variance Matrix for Each Site
   testing_components <-
@@ -120,8 +124,9 @@ mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype
 
   ### Compute P-value for SNP
   p1 <- score_test(score, V_inv, q)
-  p2 <- max_test(score, V_inv, q)
+  p2 <- min_p(score, V_inv, q)
   p_snp <- acat(c(p1, p2))
 
   return(list('p1' = p1, 'p2' = p2, 'p_snp' = p_snp))
 }
+

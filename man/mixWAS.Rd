@@ -2,7 +2,7 @@
 % Please edit documentation in R/mixWAS.R
 \name{mixWAS}
 \alias{mixWAS}
-\title{mixWAS Algorithm for All Sites (if all data can be supplied at once}
+\title{mixWAS Algorithm for All Sites (if all data can be supplied at once)}
 \usage{
 mixWAS(
   snps,
@@ -25,6 +25,9 @@ If specifying for all sites and just need some sites with complex build instruct
 then supply a list of length = # of sites, entries = NULL for default behavior, and a data frame like object of instructions if needed.
 See `mixWAS_single_site` help page for more information.}
 
+\item{phenotype_index:}{list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If NULL (default), will be
+infered from matrix colnames.}
+
 \item{types:}{list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.}
 }
@@ -32,5 +35,5 @@ See `mixWAS_single_site` help page for more information.}
 p-value of aggregate test
 }
 \description{
-mixWAS Algorithm for All Sites (if all data can be supplied at once
+mixWAS Algorithm for All Sites (if all data can be supplied at once)
 }

@@ -10,7 +10,9 @@ mixWAS(
   covariates,
   covariate_map = NULL,
   phenotype_index = NULL,
-  types = NULL
+  types = NULL,
+  parallel_sites = F,
+  return_p = T
 )
 }
 \arguments{
@@ -30,6 +32,10 @@ infered from matrix colnames.}
 
 \item{types:}{list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.}
+
+\item{parallel_sites:}{logical, if score/variance component computations should be parallelized over sites. Default = FALSE}
+
+\item{return_p:}{logical, if TRUE return P-values, else return components like score/variance. Default = T}
 }
 \value{
 p-value of aggregate test

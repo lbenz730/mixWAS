@@ -2,3 +2,4 @@
 
 export(mixWAS)
 export(mixWAS_single_site)
+export(run_hypothesis_tests)

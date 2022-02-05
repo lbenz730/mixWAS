@@ -72,9 +72,13 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NUL
 #' infered from matrix colnames.
 #' @param types: list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.
+#' @param parallel_sites: logical, if score/variance component computations should be parallelized over sites. Default = FALSE
+#' @param return_p: logical, if TRUE return P-values, else return components like score/variance. Default = T
 #' @return p-value of aggregate test
 #' @export
-mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype_index = NULL, types = NULL) {
+mixWAS <- function(snps, phenotypes, covariates,
+                   covariate_map = NULL, phenotype_index = NULL, types = NULL,
+                   parallel_sites = F, return_p = T) {
   ### Handle the case of single site
   if(!is.list(snps)) {
     snps <- list(snps)
@@ -102,13 +106,19 @@ mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype
   ### # of phenotypes
   q <- max(unlist(phenotype_index))
 
-  ### Compute Score and Variance Matrix for Each Site
+  ## Compute Score and Variance Matrix for Each Site
+  if(parallel_sites) {
+    mapper <- purrr::map
+  } else {
+    mapper <- furrr::future_map
+  }
+
   testing_components <-
-    purrr::map(1:num_sites, ~mixWAS_single_site(snps[[.x]],
-                                                phenotypes[[.x]],
-                                                covariates[[.x]],
-                                                covariate_map[[.x]],
-                                                types[[.x]]))
+    mapper(1:num_sites, ~mixWAS_single_site(snps[[.x]],
+                                            phenotypes[[.x]],
+                                            covariates[[.x]],
+                                            covariate_map[[.x]],
+                                            types[[.x]]))
 
   ### Build combined score/variance matrix
   score <- rep(0, q)
@@ -121,12 +131,22 @@ mixWAS <- function(snps, phenotypes, covariates, covariate_map = NULL, phenotype
   }
 
   V_inv <- solve(V)
+  z <- compute_z_scores(score, V_inv)
 
-  ### Compute P-value for SNP
-  p1 <- score_test(score, V_inv, q)
-  p2 <- min_p(score, V_inv, q)
-  p_snp <- acat(c(p1, p2))
+  ### Return components rather than p-values (helpful for parallelization)
+  if(!return_p) {
+    components <-
+      list('score' = score,
+           'V' = V,
+           'V_inv' = V_inv,
+           'z' = z,
+           'q' = q)
+    return(components)
+  }
 
-  return(list('p1' = p1, 'p2' = p2, 'p_snp' = p_snp))
+  ## Compute P-value(s)
+  p_values <- run_hypothesis_tests(score, V_inv, z, q)
+
+  return(p_values)
 }
 

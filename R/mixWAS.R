@@ -31,7 +31,7 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NUL
   covariate_index <- covariate_info$index
 
   ### Run all regressions of reduced models
-  gamma_list <- run_regressions(snps,phenotypes, covariates, covariate_index, Delta, types)
+  gamma_list <- run_regressions(snps, phenotypes, covariates, covariate_index, Delta, types)
 
   ### Compute Score for all phenotypes at site
   score <- compute_site_score(snps, phenotypes, covariates, covariate_index, gamma_list, Delta, types)

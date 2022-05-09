@@ -41,7 +41,7 @@ run_hypothesis_tests <- function(score, V_inv, z, q) {
   p_acat <- acat(2 * pnorm(-abs(z))) ### ACAT of p-values
   p_ghc <- GBJ::GHC(z, diag(1, q))$GHC_pvalue ### Generalized Higher Criticism
   p_gbj <- GBJ::GBJ(z, diag(1, q))$GBJ_pvalue ### Generalized Berk Jones
-  p_snp <- acat(c(p_score, p_min, p_ghc, p_gbj))
+  p_snp <- acat(c(p_score, p_acat, p_ghc, p_gbj))
 
   ### Compile List
   p_values <-

@@ -14,6 +14,7 @@ compute_z_scores <- function(score, V_inv) {
 min_p <- function(z, q) {
   ### 2 sided test for P(|Z| >= z)
   t <- max(abs(z))^2
+  # p_min <- 1 - pchisq(t, df = 1)^q [equivalent]
   p_min <- 1 - exp(q * pchisq(t, df = 1, log.p = T))
   return(p_min)
 }
@@ -36,7 +37,8 @@ acat <- function(p) {
 run_hypothesis_tests <- function(score, V_inv, z, q) {
 
   p_score <- score_test(score, V_inv, q) ### Score Test
-  p_min <- min_p(z, q) ### Min P Method
+  # p_min <- min_p(z, q) ### Min P Method
+  p_acat <- acat(2 * pnorm(-abs(z))) ### ACAT of p-values
   p_ghc <- GBJ::GHC(z, diag(1, q))$GHC_pvalue ### Generalized Higher Criticism
   p_gbj <- GBJ::GBJ(z, diag(1, q))$GBJ_pvalue ### Generalized Berk Jones
   p_snp <- acat(c(p_score, p_min, p_ghc, p_gbj))
@@ -44,7 +46,8 @@ run_hypothesis_tests <- function(score, V_inv, z, q) {
   ### Compile List
   p_values <-
     list('p_score' = p_score,
-         'p_min' = p_min,
+         # 'p_min' = p_min,
+         'p_acat' = p_acat,
          'p_gbj' = p_gbj,
          'p_ghc' = p_ghc,
          'p_snp' = p_snp)

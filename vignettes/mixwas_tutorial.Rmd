@@ -1,0 +1,157 @@
+---
+title: "mixWAS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mixWAS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+### Load mixWAS library
+library(mixWAS)
+```
+
+To demonstrate how to use `mixWAS`, we'll first load in some sample data that was used in simulations. In particular, the following is a single dataset from Simulation 1 in the paper.
+
+* 8 phenotypes (1-4 continuous, 5-8 binary)
+* 8 phenotypes at site 1 and 5, 7 at site 2, 6 at site 3, and 5 at site 4
+* 5 sites
+* 1000 subjects per site
+* 6 covariates 
+* PC1, PC2, PC3, PC4 represent 4 principle components from a PCA analysis
+* age_centered represents subject age (relative to some mean)
+* gender = binary gender covariate
+
+In this simulated dataset $\beta_1 = \beta_5 = 0.01872$ and $\beta_2 = \beta_3 = \beta_4 = \beta_6 = \beta_7 = \beta_8 = 0$.
+
+```{r}
+### Load example data from mixWAS package
+data(example_data)
+```
+
+
+## mixWAS when all data is available to central analyst
+
+In this example, we have access to all sites data at once. If this is the case, `mixWAS` can be called directly as follows
+```{r}
+mixWAS(snps = example_data$snps,
+       covariates = example_data$covariates,
+       phenotypes = example_data$phenotypes)
+```
+
+* `p_score`: $p$-value for score test against dense alternatives
+* `p_acat`: ACAT $p$-value against sparse alternatives
+* `p_snp`: Overall SNP $p$-value for detecing multi-phenotype association
+
+If we had wanted to run this in parallel across sites, we could do so as follows.
+
+```{r, warning = F, message = F}
+library(furrr)
+plan(future::multicore(workers = parallel::detectCores() - 1))
+options(future.globals.maxSize = 8 * 1024^3)
+
+mixWAS(snps = example_data$snps,
+       covariates = example_data$covariates,
+       phenotypes = example_data$phenotypes,
+       parallel_sites = T)
+```
+
+If we had wanted intermediate outputs rather than $p$-values, we could run `mixWAS` as follows
+```{r}
+### mixWAS w/ intermediate components
+components <- 
+  mixWAS(snps = example_data$snps,
+         covariates = example_data$covariates,
+         phenotypes = example_data$phenotypes,
+         return_p = F)
+
+names(components)
+```
+
+* `score`: combined score vector
+* `V`: Variance matrix for score vector
+* `V_inv`: Inverse of variance matrix for score vector
+* `z`: standardized score vector (e.g. $V^{-1/2} S$ where $S$ is the score vector).
+* `q`: # of phenotypes
+
+`mixWAS` $p$-values can be recovered from these intermediate components using `run_hypothesis_tests`.
+
+```{r}
+### Recover p-values from intermediate output
+run_hypothesis_tests(score = components$score,
+                     V_inv = components$V_inv,
+                     z = components$z,
+                     q = components$q)
+
+```
+
+Note that we did not need to specify the inputs `phenotype_index`, `covariate_map`, or `types` as they can be inferred. For user reference, here is the result of `mixWAS` figuring out each of these arguments.
+
+```{r}
+### Phenotype Index
+### (1) Get names of all phenotypes
+all_names <- unique(unlist(purrr::map(example_data$phenotypes, ~colnames(.x))))
+
+### (2) Get numeric index of which phenotypes are at each site
+phenotype_index <- 
+  purrr::map(example_data$phenotypes, 
+             ~which(all_names %in% colnames(.x)))
+phenotype_index
+
+### Covariate Data Types
+### (1) is_binary helper function
+is_binary <- function(x) {
+  x <- x[!is.na(x)]
+  return(all(x == 0 | x == 1))
+}
+
+### (2) Determine data types (never infers 'count')
+type_list <-
+  purrr::map(example_data$phenotypes, 
+             ~ifelse(apply(.x, 2, is_binary), 'binary', 'continuous'))
+type_list
+
+### Covariate Map for this example
+df_map <- dplyr::tibble('variable' = c('PC1', 'PC2', 'PC3', 'PC4', 
+                                       'age_centered', 'gender'),
+                        'phenotype' = 'all')
+
+
+### Running w/ extra arguments to show same results
+mixWAS(snps = example_data$snps,
+       covariates = example_data$covariates,
+       phenotypes = example_data$phenotypes,
+       phenotype_index = phenotype_index,
+       types = type_list,
+       covariate_map =  purrr::map(1:8, ~df_map))
+
+```
+
+
+## mixWAS when each site needs to be processed seperately
+
+In practice however, it's possible that individual data can not be combined across sites or even stored at the same time. When this is the case, we can run `mixWAS_single_site` on each site, and combined results, as follows. Below we show running `mixWAS_single_site` on each site a single machine but of course it could run seperately with these outputs being shared and later combined via `combine_site_results`.
+
+
+```{r}
+### Run mixWAS_single_site 1 at a time
+num_sites <- 5
+site_components <-
+  map(1:num_sites, ~mixWAS_single_site(snps = example_data$snps[[.x]],
+                                       phenotypes = example_data$phenotypes[[.x]],
+                                       covariates = example_data$covariates[[.x]]))
+
+### Combine results at "central analyst"
+combine_site_results(mixWAS_components = site_components,
+                     q = 8,
+                     phenotypes = example_data$phenotypes)
+
+```

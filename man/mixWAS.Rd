@@ -22,13 +22,14 @@ mixWAS(
 
 \item{covariates:}{list of covariates, each a matrix or data frame of covariates}
 
-\item{covariate_map:}{default = NULL, list of covariate matrix build instructions for each site.
-If specifying for all sites and just need some sites with complex build instruction (not all phenotypes use all covariates)
-then supply a list of length = # of sites, entries = NULL for default behavior, and a data frame like object of instructions if needed.
+\item{covariate_map:}{Default = `NULL`. If `NULL`, function assumes by all covariates are to be used for each phenotype.
+If this is not desired behavior, user can supply a list of data frames (one for each site). Each data frame should have two columns one called `variable` and a second called `phenotype`.
+In the variable column is the name of covariates, with phenotypes being specified as 'all' (to use the variable for all phenotypes)
+or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all). A phenotype specific data set of covariates with use 'all' covariate + phenotype specific covariates.
 See `mixWAS_single_site` help page for more information.}
 
 \item{phenotype_index:}{list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If NULL (default), will be
-infered from matrix colnames.}
+inferred from matrix colnames.}
 
 \item{types:}{list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.}

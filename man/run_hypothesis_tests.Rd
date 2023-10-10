@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypothesis_tests.R
 \name{run_hypothesis_tests}
 \alias{run_hypothesis_tests}
-\title{run_hypothesis_tests from mixWAS components}
+\title{run hypothesis tests from mixWAS components}
 \usage{
 run_hypothesis_tests(score, V_inv, z, q)
 }
@@ -19,5 +19,5 @@ run_hypothesis_tests(score, V_inv, z, q)
 p-values of aggregate tests
 }
 \description{
-run_hypothesis_tests from mixWAS components
+run hypothesis tests from mixWAS components
 }

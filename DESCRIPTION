@@ -3,6 +3,7 @@ Type: Package
 Title: A Federated Algorithm for Testing Variant Level Associations Across Mixed Type Phenotypes
 Version: 0.1.0
 Authors@R: c(person('Luke', 'Benz', email = 'lukebenz@g.harvard.edu', role = c('aut', 'cre')),
+             person('Ruowang', 'Li', role = c('ctb')),
              person('Rui', 'Duan', role = c('ctb')))
 Maintainer: Luke Benz <lukebenz@g.harvard.edu>
 Description: mixWAS is a novel federated algorithm for testing the SNP-level association across multiple mixed type (continuous, binary etc.) phenotypes.
@@ -17,4 +18,6 @@ Import:
   expm,
   magrittr,
   fastDummies,
-RoxygenNote: 7.1.2
+VignetteBuilder: knitr
+Suggests: knitr, rmarkdown
+RoxygenNote: 7.2.3

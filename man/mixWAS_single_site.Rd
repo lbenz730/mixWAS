@@ -19,11 +19,11 @@ mixWAS_single_site(
 
 \item{covariates:}{matrix or data frame of covariates}
 
-\item{covariate_map:}{Default = NULL. If NULL, function assumes by all covariates are to be used for each phenotype.
-If this is not desired behavior, user can supply a data frame with two columns
-one called `variable` and a second called `phenotype`. In the variable column is the name of covariates, with phenotypes being specified as
-'all' (to use the variable for all phenotypes) or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all).
-A phenotype specific data set of covariates with use 'all' covaraite + pheno-type sepcific covariates.}
+\item{covariate_map:}{Default = `NULL`. If `NULL`, function assumes by all covariates are to be used for each phenotype.
+If this is not desired behavior, user can supply a data frame with two columns one called `variable` and a second called `phenotype`.
+In the variable column is the name of covariates, with phenotypes being specified as 'all' (to use the variable for all phenotypes)
+or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all).
+A phenotype specific data set of covariates with use 'all' covariate + phenotype specific covariates.}
 
 \item{types:}{optional vector specifying data types ('continuous', 'binary', 'count'). Default = NULL (phenotype data types will be inferred)
 Note that 'count' will never be inferred, only 'binary' or 'continuous'.}

@@ -27,7 +27,7 @@ acat <- function(p) {
   return(p_acat)
 }
 
-#' run_hypothesis_tests from mixWAS components
+#' run hypothesis tests from mixWAS components
 #' @param score score vector from mixWAS intermediate output
 #' @param V_inv Inverse Varariance Matrix from mixWAS intermediate output
 #' @param z Standardized Z-scores from mixWAS intermediate output

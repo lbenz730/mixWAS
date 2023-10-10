@@ -2,11 +2,11 @@
 #' @param snps: vector of SNPs in [0,1,2]
 #' @param phenotypes: matrix of phenotypes (one per column), with names of phenotypes specified as column names
 #' @param covariates: matrix or data frame of covariates
-#' @param covariate_map: Default = NULL. If NULL, function assumes by all covariates are to be used for each phenotype.
-#' If this is not desired behavior, user can supply a data frame with two columns
-#' one called `variable` and a second called `phenotype`. In the variable column is the name of covariates, with phenotypes being specified as
-#' 'all' (to use the variable for all phenotypes) or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all).
-#' A phenotype specific data set of covariates with use 'all' covaraite + pheno-type sepcific covariates.
+#' @param covariate_map: Default = `NULL`. If `NULL`, function assumes by all covariates are to be used for each phenotype.
+#' If this is not desired behavior, user can supply a data frame with two columns one called `variable` and a second called `phenotype`.
+#' In the variable column is the name of covariates, with phenotypes being specified as 'all' (to use the variable for all phenotypes)
+#' or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all).
+#' A phenotype specific data set of covariates with use 'all' covariate + phenotype specific covariates.
 #' @param types: optional vector specifying data types ('continuous', 'binary', 'count'). Default = NULL (phenotype data types will be inferred)
 #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.
 #' @return a list with components `score` and `V`, the score vector and covariance matrix for single site
@@ -64,12 +64,13 @@ mixWAS_single_site <- function(snps, phenotypes, covariates, covariate_map = NUL
 #' @param snps: list of snps (one for each site), each a vector of SNPs in [0,1,2]
 #' @param phenotypes: list of phenotypes, each a matrix of phenotypes (one per column), with names of phenotypes specified as column names
 #' @param covariates: list of covariates, each a matrix or data frame of covariates
-#' @param covariate_map: default = NULL, list of covariate matrix build instructions for each site.
-#' If specifying for all sites and just need some sites with complex build instruction (not all phenotypes use all covariates)
-#' then supply a list of length = # of sites, entries = NULL for default behavior, and a data frame like object of instructions if needed.
+#' @param covariate_map: Default = `NULL`. If `NULL`, function assumes by all covariates are to be used for each phenotype.
+#' If this is not desired behavior, user can supply a list of data frames (one for each site). Each data frame should have two columns one called `variable` and a second called `phenotype`.
+#' In the variable column is the name of covariates, with phenotypes being specified as 'all' (to use the variable for all phenotypes)
+#' or the name of a phenotype. Variables can be entered multiple times if they go to multiple phenotypes (but not all). A phenotype specific data set of covariates with use 'all' covariate + phenotype specific covariates.
 #' See `mixWAS_single_site` help page for more information.
 #' @param phenotype_index: list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If NULL (default), will be
-#' infered from matrix colnames.
+#' inferred from matrix colnames.
 #' @param types: list of data types ('continuous', 'binary', 'count'). Default = NULL (infer types).
 #' #' Note that 'count' will never be inferred, only 'binary' or 'continuous'.
 #' @param parallel_sites: logical, if score/variance component computations should be parallelized over sites. Default = FALSE
@@ -150,3 +151,50 @@ mixWAS <- function(snps, phenotypes, covariates,
   return(p_values)
 }
 
+#' Combine results from running mixWAS on each site individually
+#' @param mixWAS_components: list of `mixWAS_single_site` output of length = # of sites
+#' @param q: # of phenotypes
+#' @param phenotypes: Optional list of phenotypes, each a matrix of phenotypes (one per column), with names of phenotypes specified as column names.
+#' If `phenotype_index` is `NULL`, will be used to infer phenotypes. One of `phenotypes` and `phenotype_index`must be specified
+#' @param phenotype_index: list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If NULL (default), will be
+#' inferred from phenotype matrix colnames.
+#' @param return_p: logical, if TRUE return P-values, else return components like score/variance. Default = T
+#' @return p-value of aggregate test
+#' @export
+combine_site_results <- function(mixWAS_components, q, phenotypes = NULL, phenotype_index = NULL, return_p = T) {
+  num_sites <- length(mixWAS_components)
+
+  ### Infer Phenotype index if phenotype_index not supplied
+  if(any(is.null(phenotype_index))) {
+    phenotype_index <- infer_phenotype_index(phenotypes)
+  }
+
+  ### Build combined score/variance matrix
+  score <- rep(0, q)
+  V <- matrix(0, nrow = q, ncol = q)
+
+  for(i in 1:num_sites) {
+    index <- phenotype_index[[i]]
+    score[index] <- score[index] + mixWAS_components[[i]]$score
+    V[index, index] <- V[index, index] + mixWAS_components[[i]]$V
+  }
+
+  V_inv <- solve(V)
+  z <- compute_z_scores(score, V_inv)
+
+  ### Return components rather than p-values
+  if(!return_p) {
+    components <-
+      list('score' = score,
+           'V' = V,
+           'V_inv' = V_inv,
+           'z' = z,
+           'q' = q)
+    return(components)
+  }
+
+  ## Compute P-value(s)
+  p_values <- run_hypothesis_tests(score, V_inv, z, q)
+  return(p_values)
+
+}

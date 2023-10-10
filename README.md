@@ -4,7 +4,7 @@ This repository contains code for the paper (INSERT PAPER + Link Here). An R pac
 
 ``` r
 # install.packages('devtools')
-devtools::install_github('lbenz730/mixWAS')
+devtools::install_github('lbenz730/mixWAS', build_vignettes = TRUE)
 ```
 
 # Example Usage

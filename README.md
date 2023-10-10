@@ -2,11 +2,19 @@
 
 This repository contains code for the paper (INSERT PAPER + Link Here). An R package for the `mixWAS` algorithm is available for download as follows
 
-```
+``` r
 # install.packages('devtools')
 devtools::install_github('lbenz730/mixWAS')
 ```
 
+# Example Usage
+A detailed tutorial for using `mixWAS` can be explored via
+
+``` r
+vignette('mixwas_tutorial') 
+```
+
+# Functions
 `mixWAS` exports the following 4 functions, with the following arguments
 
 
@@ -40,3 +48,4 @@ devtools::install_github('lbenz730/mixWAS')
     * `phenotype_index`:	list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If `NULL` (default), will be inferred from `phenotypes`.
     * `return_p`: logical, if TRUE return P-values, else return components like score/variance. Default = `TRUE`.
 
+# Simulation Results

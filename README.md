@@ -48,4 +48,6 @@ vignette('mixwas_tutorial')
     * `phenotype_index`:	list of vectors giving the index (numeric) of which phenotypes are in each site's matrix. If `NULL` (default), will be inferred from `phenotypes`.
     * `return_p`: logical, if TRUE return P-values, else return components like score/variance. Default = `TRUE`.
 
-# Simulation Results
+# Simulations
+
+Simulations from the paper are available in the [simulations folder](https://github.com/lbenz730/mixWAS/tree/main/simulations).

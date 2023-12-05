@@ -20,18 +20,18 @@ gg_color_hue <- function(n) {
 
 ### Updated Main Figures
 ### Final 1: Same Signs
-df_sims <- 
+df_sims <-
   bind_rows(
     read_csv('outputs/v3/simulation_run_v3_same_sign_1/combined.csv') %>% mutate('sigma' = 'Positive Phenotype Correlation'),
     read_csv('outputs/v3/simulation_run_v3_same_sign_2/combined.csv') %>% mutate('sigma' = 'No Phenotype Correlation'),
     read_csv('outputs/v3/simulation_run_v3_same_sign_3/combined.csv') %>% mutate('sigma' = 'Negative Phenotype Correlation')
   )
 
-df_final_1 <- 
-  df_sims %>% 
+df_final_1 <-
+  df_sims %>%
   pivot_longer(cols = starts_with('p_'),
                names_to = 'method',
-               values_to = 'power') %>% 
+               values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
                               method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
@@ -43,19 +43,19 @@ df_final_1 <-
                               method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
                               method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
-  )) %>% 
+  )) %>%
   mutate('method' = fct_relevel(method, 'mixWAS', 'Score', 'ACAT of Score P-Values', 'PheWAS Mega', 'PheWAS Meta',
-                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT', 
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>% 
-  mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>% 
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>%
   mutate('direction' = gsub('\\s+--','', paste(direction_bin, direction_con))) %>%
   mutate('direction' = case_when(direction == 'Same Positive Same Positive' ~ 'Same Direction',
                                  direction == 'Same Positive Opposite' ~ 'Opposite Direction',
-                                 direction == 'Same Positive Same Negative' ~ 'Opposite Direction')) %>% 
-  mutate('direction' = fct_relevel(direction, 
+                                 direction == 'Same Positive Same Negative' ~ 'Opposite Direction')) %>%
+  mutate('direction' = fct_relevel(direction,
                                    'Same Direction',
                                    'Opposite Direction'),
-         'sigma' = fct_relevel(sigma, 
+         'sigma' = fct_relevel(sigma,
                                'Positive Phenotype Correlation',
                                'No Phenotype Correlation',
                                'Negative Phenotype Correlation')) %>%
@@ -66,11 +66,11 @@ df_final_1 <-
   filter(method %in% c('mixWAS', 'PheWAS Meta', 'PheWAS Mega', 'Oracle'))
 
 ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity) + 
-  geom_line(aes(col = method)) + 
-  scale_y_continuous(labels = scales::percent) + 
-  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) + 
-  scale_x_continuous(limits = c(0, 0.2)) + 
+  facet_grid(sigma~sparsity) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) +
+  scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
@@ -81,18 +81,18 @@ ggsave('paper_figures/final_simulation_same.png', width = 16/1.2, height = 9/1.2
 
 
 ### Final 2: Opp Signs
-df_sims <- 
+df_sims <-
   bind_rows(
     read_csv('outputs/v3/simulation_run_v3_opp_sign_1/combined.csv') %>% mutate('sigma' = 'Positive Phenotype Correlation'),
     read_csv('outputs/v3/simulation_run_v3_opp_sign_2/combined.csv') %>% mutate('sigma' = 'No Phenotype Correlation'),
     read_csv('outputs/v3/simulation_run_v3_opp_sign_3/combined.csv') %>% mutate('sigma' = 'Negative Phenotype Correlation')
   )
 
-df_final_2 <- 
-  df_sims %>% 
+df_final_2 <-
+  df_sims %>%
   pivot_longer(cols = starts_with('p_'),
                names_to = 'method',
-               values_to = 'power') %>% 
+               values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
                               method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
@@ -104,19 +104,19 @@ df_final_2 <-
                               method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
                               method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
-  )) %>% 
+  )) %>%
   mutate('method' = fct_relevel(method, 'mixWAS', 'Score', 'ACAT of Score P-Values', 'PheWAS Mega', 'PheWAS Meta',
-                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT', 
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>% 
-  mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>% 
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>%
   mutate('direction' = gsub('\\s+--','', paste(direction_bin, direction_con))) %>%
   mutate('direction' = case_when(direction == 'Same Positive Same Positive' ~ 'Same Direction',
                                  direction == 'Same Positive Opposite' ~ 'Opposite Direction',
-                                 direction == 'Same Positive Same Negative' ~ 'Opposite Direction')) %>% 
-  mutate('direction' = fct_relevel(direction, 
+                                 direction == 'Same Positive Same Negative' ~ 'Opposite Direction')) %>%
+  mutate('direction' = fct_relevel(direction,
                                    'Same Direction',
                                    'Opposite Direction'),
-         'sigma' = fct_relevel(sigma, 
+         'sigma' = fct_relevel(sigma,
                                'Positive Phenotype Correlation',
                                'No Phenotype Correlation',
                                'Negative Phenotype Correlation')) %>%
@@ -127,11 +127,11 @@ df_final_2 <-
   filter(method %in% c('mixWAS', 'PheWAS Meta', 'PheWAS Mega', 'Oracle'))
 
 ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity) + 
-  geom_line(aes(col = method)) + 
-  scale_y_continuous(labels = scales::percent) + 
-  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) + 
-  scale_x_continuous(limits = c(0, 0.2)) + 
+  facet_grid(sigma~sparsity) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) +
+  scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
@@ -157,66 +157,66 @@ opp_params2 <- opp_sim_inputs2$params
 opp_params3 <- opp_sim_inputs3$params
 
 bind_rows(
-  as_tibble(same_params1$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(same_params1$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 1: Same Direction Effects',
-           'sigma' = 'Positive Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'Positive Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation'),
-  as_tibble(same_params2$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(same_params2$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 1: Same Direction Effects',
-           'sigma' = 'No Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'No Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation'),
-  as_tibble(same_params3$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(same_params3$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 1: Same Direction Effects',
-           'sigma' = 'Negative Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'Negative Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation'),
-  as_tibble(opp_params1$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(opp_params1$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 2: Opposite Direction Effects',
-           'sigma' = 'Positive Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'Positive Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation'),
-  as_tibble(opp_params2$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(opp_params2$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 2: Opposite Direction Effects',
-           'sigma' = 'No Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'No Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation'),
-  as_tibble(opp_params3$Sigma) %>% 
-    set_names(paste0('Y', 1:8)) %>% 
+  as_tibble(opp_params3$Sigma) %>%
+    set_names(paste0('Y', 1:8)) %>%
     mutate('phenotype' = paste0('Y', 1:8),
            'simulation' = 'Simulation 2: Opposite Direction Effects',
-           'sigma' = 'Negative Phenotype Correlation') %>% 
-    pivot_longer(cols = starts_with('Y'), 
+           'sigma' = 'Negative Phenotype Correlation') %>%
+    pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation')
-  ) %>% 
-  mutate('sigma' = fct_relevel(sigma, 
+  ) %>%
+  mutate('sigma' = fct_relevel(sigma,
                                'Positive Phenotype Correlation',
                                'No Phenotype Correlation',
                                'Negative Phenotype Correlation')) %>%
-  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8 * 6)))) + 
-  facet_grid(simulation~sigma) + 
-  geom_tile(aes(fill = as.factor(correlation)), col = 'black',  alpha = 0.8) + 
-  scale_fill_manual(values = c('red', 'white', 'seagreen', 'black')) + 
-  theme(panel.grid.major = element_blank()) + 
+  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8 * 6)))) +
+  facet_grid(simulation~sigma) +
+  geom_tile(aes(fill = as.factor(correlation)), col = 'black',  alpha = 0.8) +
+  scale_fill_manual(values = c('red', 'white', 'dodgerblue', 'black')) +
+  theme(panel.grid.major = element_blank()) +
   labs(x = '',
-       y = '', 
+       y = '',
        fill = 'Correlation')
 
 ggsave('paper_figures/correlation_simulation_main.png', height = 6, width = 9)
@@ -228,11 +228,11 @@ params <- sim_inputs$params
 df_sims <- read_csv('outputs/v3/simulation_run_v3_2/combined.csv')
 
 
-df2 <- 
-  df_sims %>% 
+df2 <-
+  df_sims %>%
   pivot_longer(cols = starts_with('p_'),
                names_to = 'method',
-               values_to = 'power') %>% 
+               values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
                               method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
@@ -244,27 +244,27 @@ df2 <-
                               method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
                               method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
-  )) %>% 
+  )) %>%
   mutate('method' = fct_relevel(method, 'mixWAS', 'Score', 'ACAT of Score P-Values', 'PheWAS Mega', 'PheWAS Meta',
-                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT', 
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>% 
-  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>% 
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
                                  direction == 'Same Negative' ~ 'Same Direction (Negative)',
-                                 direction == 'Opposite' ~ 'Opposite Direction')) %>% 
+                                 direction == 'Opposite' ~ 'Opposite Direction')) %>%
   mutate('direction' = fct_relevel(direction, 'Same Direction (Positive)', 'Same Direction (Negative)', 'Opposite Direction')) %>%
   group_by(method, power, direction, sparsity) %>%
-  mutate('min_beta' = min(max_beta_bin)) %>% 
-  filter(max_beta_bin == min_beta) %>% 
-  ungroup() %>% 
+  mutate('min_beta' = min(max_beta_bin)) %>%
+  filter(max_beta_bin == min_beta) %>%
+  ungroup() %>%
   filter(method %in% c('mixWAS', 'PheWAS Meta', 'PheWAS Mega', 'ASSET Meta (Subset Search)', 'Oracle'))
 
 ggplot(df2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity) + 
-  geom_line(aes(col = method)) + 
-  scale_y_continuous(labels = scales::percent) + 
-  scale_x_continuous(limits = c(0, 0.2)) + 
+  facet_grid(direction~sparsity) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
@@ -280,11 +280,11 @@ params <- sim_inputs$params
 df_sims <- read_csv('outputs/v3/simulation_run_v3_3/combined.csv')
 
 
-df3 <- 
-  df_sims %>% 
+df3 <-
+  df_sims %>%
   pivot_longer(cols = starts_with('p_'),
                names_to = 'method',
-               values_to = 'power') %>% 
+               values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
                               method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
@@ -296,27 +296,27 @@ df3 <-
                               method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
                               method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
-  )) %>% 
+  )) %>%
   mutate('method' = fct_relevel(method, 'mixWAS', 'Score', 'ACAT of Score P-Values', 'PheWAS Mega', 'PheWAS Meta',
-                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT', 
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>% 
-  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>% 
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
                                  direction == 'Same Negative' ~ 'Same Direction (Negative)',
-                                 direction == 'Opposite' ~ 'Opposite Direction')) %>% 
+                                 direction == 'Opposite' ~ 'Opposite Direction')) %>%
   mutate('direction' = fct_relevel(direction, 'Same Direction (Positive)', 'Same Direction (Negative)', 'Opposite Direction')) %>%
   group_by(method, power, direction, sparsity) %>%
-  mutate('min_beta' = min(max_beta_bin)) %>% 
-  filter(max_beta_bin == min_beta) %>% 
-  ungroup() %>% 
+  mutate('min_beta' = min(max_beta_bin)) %>%
+  filter(max_beta_bin == min_beta) %>%
+  ungroup() %>%
   filter(method %in% c('mixWAS', 'PheWAS Meta', 'PheWAS Mega', 'ASSET Meta (Subset Search)', 'Oracle'))
 
 ggplot(df3, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity, scales = 'free_x') + 
-  geom_line(aes(col = method)) + 
-  scale_y_continuous(labels = scales::percent) + 
-  scale_x_continuous(limits = c(0, 0.4)) + 
+  facet_grid(direction~sparsity, scales = 'free_x') +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(limits = c(0, 0.4)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
@@ -325,18 +325,18 @@ ggplot(df3, aes(x = max_beta_bin, y = power)) +
 
 ggsave('paper_figures/simulation_3.png', width = 16/1.25, height = 9/1.25)
 
-as_tibble(params$Sigma) %>% 
-  set_names(paste0('Y', 1:8)) %>% 
-  mutate('phenotype' = paste0('Y', 1:8)) %>% 
-  pivot_longer(cols = starts_with('Y'), 
+as_tibble(params$Sigma) %>%
+  set_names(paste0('Y', 1:8)) %>%
+  mutate('phenotype' = paste0('Y', 1:8)) %>%
+  pivot_longer(cols = starts_with('Y'),
                names_to = 'phenotype2',
-               values_to = 'correlation') %>% 
-  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8)))) + 
-  geom_tile(aes(fill = as.factor(correlation)), col = 'black',  alpha = 0.8) + 
-  scale_fill_manual(values = c('white', 'orange', 'pink', 'black')) + 
-  theme(panel.grid.major = element_blank()) + 
+               values_to = 'correlation') %>%
+  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8)))) +
+  geom_tile(aes(fill = as.factor(correlation)), col = 'black',  alpha = 0.8) +
+  scale_fill_manual(values = c('white', 'orange', 'pink', 'black')) +
+  theme(panel.grid.major = element_blank()) +
   labs(x = '',
-       y = '', 
+       y = '',
        fill = 'Correlation')
 ggsave('paper_figures/correlation_simulation_3.png', width = 16/2, height = 9/2)
 
@@ -347,11 +347,11 @@ params <- sim_inputs$params
 df_sims <- read_csv('outputs/v3/simulation_run_v3_4/combined.csv')
 
 
-df4 <- 
-  df_sims %>% 
+df4 <-
+  df_sims %>%
   pivot_longer(cols = starts_with('p_'),
                names_to = 'method',
-               values_to = 'power') %>% 
+               values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
                               method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
@@ -363,27 +363,27 @@ df4 <-
                               method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
                               method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
-  )) %>% 
+  )) %>%
   mutate('method' = fct_relevel(method, 'mixWAS', 'Score', 'ACAT of Score P-Values', 'PheWAS Mega', 'PheWAS Meta',
-                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT', 
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>% 
-  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>% 
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
                                  direction == 'Same Negative' ~ 'Same Direction (Negative)',
-                                 direction == 'Opposite' ~ 'Opposite Direction')) %>% 
+                                 direction == 'Opposite' ~ 'Opposite Direction')) %>%
   mutate('direction' = fct_relevel(direction, 'Same Direction (Positive)', 'Same Direction (Negative)', 'Opposite Direction')) %>%
   group_by(method, power, direction, sparsity) %>%
-  mutate('min_beta' = min(max_beta_bin)) %>% 
-  filter(max_beta_bin == min_beta) %>% 
-  ungroup() %>% 
+  mutate('min_beta' = min(max_beta_bin)) %>%
+  filter(max_beta_bin == min_beta) %>%
+  ungroup() %>%
   filter(method %in% c('mixWAS', 'PheWAS Meta', 'PheWAS Mega', 'ASSET Meta (Subset Search)', 'Oracle'))
 
 ggplot(df4, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity, scales = 'free_x') + 
-  geom_line(aes(col = method)) + 
-  scale_y_continuous(labels = scales::percent) + 
-  scale_x_continuous(limits = c(0, 0.3)) + 
+  facet_grid(direction~sparsity, scales = 'free_x') +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(limits = c(0, 0.3)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
@@ -392,17 +392,17 @@ ggplot(df4, aes(x = max_beta_bin, y = power)) +
 
 ggsave('paper_figures/simulation_4.png', width = 16/1.25, height = 9/1.25)
 
-as_tibble(params$Sigma) %>% 
-  set_names(paste0('Y', 1:8)) %>% 
-  mutate('phenotype' = paste0('Y', 1:8)) %>% 
-  pivot_longer(cols = starts_with('Y'), 
+as_tibble(params$Sigma) %>%
+  set_names(paste0('Y', 1:8)) %>%
+  mutate('phenotype' = paste0('Y', 1:8)) %>%
+  pivot_longer(cols = starts_with('Y'),
                names_to = 'phenotype2',
-               values_to = 'correlation') %>% 
-  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8)))) + 
-  geom_tile(aes(fill = factor(correlation, levels = c(0, 0.4, 0.7, 1))), col = 'black',  alpha = 0.8) + 
-  scale_fill_manual(values = c('white', 'orange', 'pink', 'black'), drop = F) + 
-  theme(panel.grid.major = element_blank()) + 
+               values_to = 'correlation') %>%
+  ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8)))) +
+  geom_tile(aes(fill = factor(correlation, levels = c(0, 0.4, 0.7, 1))), col = 'black',  alpha = 0.8) +
+  scale_fill_manual(values = c('white', 'orange', 'pink', 'black'), drop = F) +
+  theme(panel.grid.major = element_blank()) +
   labs(x = '',
-       y = '', 
+       y = '',
        fill = 'Correlation')
 ggsave('paper_figures/correlation_simulation_4.png', width = 16/2, height = 9/2)

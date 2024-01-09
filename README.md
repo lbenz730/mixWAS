@@ -1,6 +1,6 @@
 # mixWAS
 
-This repository contains code for the paper 
+This repository contains code for the paper: 
 
 Li R., Benz L., Duan R., Denny J., Hakonarson H., Mosley J., Smoller J., Wei WQ., Ritchie M., Moore J., Chen Y. _mixWAS: An efficient distributed algorithm for mixed-outcomes genome-wide association studies_. (2024) ([Pre-Print](https://github.com/lbenz730/mixWAS/edit/main/README.md)]
 

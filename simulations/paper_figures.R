@@ -69,7 +69,7 @@ ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
   facet_grid(sigma~sparsity) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) +
+  scale_color_manual(values = gg_color_hue(5)[c(1:3, 4)]) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
@@ -130,7 +130,7 @@ ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
   facet_grid(sigma~sparsity) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_color_manual(values = gg_color_hue(5)[c(1:3, 5)]) +
+  scale_color_manual(values = gg_color_hue(5)[c(1:3, 4)]) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',

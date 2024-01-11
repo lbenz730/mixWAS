@@ -2,7 +2,7 @@
 
 This repository contains code for the paper: 
 
-Li R., Benz L., Duan R., Denny J., Hakonarson H., Mosley J., Smoller J., Wei WQ., Ritchie M., Moore J., Chen Y. _mixWAS: An efficient distributed algorithm for mixed-outcomes genome-wide association studies_. (2024) ([Pre-Print](https://www.medrxiv.org/content/10.1101/2024.01.09.24301073v1)
+Li R., Benz L., Duan R., Denny J., Hakonarson H., Mosley J., Smoller J., Wei WQ., Ritchie M., Moore J., Chen Y. _mixWAS: An efficient distributed algorithm for mixed-outcomes genome-wide association studies_. (2024) ([Pre-Print](https://www.medrxiv.org/content/10.1101/2024.01.09.24301073v1))
 
 
 An R package for the `mixWAS` algorithm is available for download as follows

@@ -7,7 +7,6 @@ theme_set(theme_bw() +
                   plot.subtitle = element_text(hjust = 0.5, size = 18),
                   axis.title = element_text(size = 20),
                   strip.text = element_text(size = 12),
-                  strip.text.y = element_text(size = 10),
                   plot.caption = element_text(size = 10),
                   legend.text = element_text(size = 12),
                   legend.position = "bottom"))
@@ -66,7 +65,7 @@ df_final_1 <-
   filter(method %in% c('mixWAS (Score + ACAT)', 'mixWAS (Score Only)', 'PheWAS', 'Oracle'))
 
 ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_manual(values = gg_color_hue(5)[c(1:3, 4)]) +
@@ -127,7 +126,7 @@ df_final_2 <-
   filter(method %in% c('mixWAS (Score + ACAT)', 'mixWAS (Score Only)', 'PheWAS', 'Oracle'))
 
 ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_manual(values = gg_color_hue(5)[c(1:3, 4)]) +
@@ -211,7 +210,7 @@ bind_rows(
                                'No Phenotype Correlation',
                                'Negative Phenotype Correlation')) %>%
   ggplot(aes(x = phenotype, y = fct_reorder(phenotype2, rep(8:1, 8 * 6)))) +
-  facet_grid(simulation~sigma) +
+  facet_grid(simulation~sigma, labeller = label_wrap_gen(width = 25)) +
   geom_tile(aes(fill = as.factor(correlation)), col = 'black',  alpha = 0.8) +
   scale_fill_manual(values = c('red', 'white', 'dodgerblue', 'black')) +
   theme(panel.grid.major = element_blank()) +
@@ -261,7 +260,7 @@ df2 <-
   filter(method %in% c('mixWAS (Score + ACAT)', 'mixWAS (Score Only)', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity) +
+  facet_grid(direction~sparsity, labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(limits = c(0, 0.2)) +
@@ -313,7 +312,7 @@ df3 <-
   filter(method %in% c('mixWAS (Score + ACAT)', 'mixWAS (Score Only)', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df3, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity, scales = 'free_x') +
+  facet_grid(direction~sparsity, scales = 'free_x', labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(limits = c(0, 0.4)) +
@@ -380,7 +379,7 @@ df4 <-
   filter(method %in% c('mixWAS (Score + ACAT)', 'mixWAS (Score Only)', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df4, aes(x = max_beta_bin, y = power)) +
-  facet_grid(direction~sparsity, scales = 'free_x') +
+  facet_grid(direction~sparsity, scales = 'free_x', labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(limits = c(0, 0.3)) +

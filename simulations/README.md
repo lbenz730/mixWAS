@@ -24,9 +24,9 @@ Mapping of simulation IDs to their corresponding ordering in the final version o
 |  same_sign_1  |      Simulation 1: $\beta$ in same direction w/ positive residual correlation     |
 |  same_sign_2  |         Simulation 1: $\beta$ in same direction w/ no residual correlation        |
 |  same_sign_3  |      Simulation 1: $\beta$ in same direction w/ negative residual correlation     |
-|   opp_sign_1  |   Simulation 2: $\beta$ in opposite directions w/ positive residual correlation   |
-|   opp_sign_2  |      Simulation 2: $\beta$ in opposite directions w/ no residual correlation      |
-|   opp_sign_3  |   Simulation 2: $\beta$ in opposite directions w/ negative residual correlation   |
+|   opp_sign_1  |   Simulation 2: $\beta$ in opposite directions w/ positive residual correlation (SUPPLEMENT)   |
+|   opp_sign_2  |      Simulation 2: $\beta$ in opposite directions w/ no residual correlation  (SUPPLEMENT)     |
+|   opp_sign_3  |   Simulation 2: $\beta$ in opposite directions w/ negative residual correlation (SUPPLEMENT)   |
 |       2       |         Simulation 3: Binary Phenotypes Only, Common Variant (SUPPLEMENT)         |
 |       3       |          Simulation 4: Binary Phenotypes Only, Rare Variant (SUPPLEMENT)          |
 |       4       | Simulation 5: Binary Phenotypes Only, Healthy Controls (SUPPLEMENT) |

@@ -31,33 +31,33 @@ if(dir.exists(paste0('outputs/v3/simulation_run_', simulation_run))) {
   files <- dir(paste0('outputs/v3/simulation_run_', simulation_run))
   start <- max(as.numeric(gsub('[^0-9]', '', files[!grepl('combined', files)])), na.rm = T)
 } else {
-  start <- 0 
+  start <- 0
 }
 
 for(i in 1:n) {
-  cat('Running Simulation', i, 'of', n, '\n') 
+  cat('Running Simulation', i, 'of', n, '\n')
   ### Seed to use in parallel
   seeds <- sample(1:1e7, 2)
-  
+
   if(i > start) {
-    
-    df <- 
-      run_simulation(params, 
+
+    df <-
+      run_simulation(params,
                      beta_bin = beta_bin[i,],
                      beta_con = beta_con[i,],
-                     n_sims = 2000, 
-                     verbose = T, 
+                     n_sims = 2000,
+                     verbose = T,
                      future_seeds = seeds)
-    
+
     if(!dir.exists(paste0('outputs/v3/simulation_run_', simulation_run))) {
       dir.create(paste0('outputs/v3/simulation_run_', simulation_run))
     }
     write_csv(df, paste0('outputs/v3/simulation_run_', simulation_run, '/', i, '.csv'))
-    
-    
+
+
     ## Clean up memory
     gc()
-    
+
   }
 }
 

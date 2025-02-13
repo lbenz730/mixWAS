@@ -6,6 +6,7 @@ theme_set(theme_bw() +
             theme(plot.title = element_text(hjust = 0.5, size = 24),
                   plot.subtitle = element_text(hjust = 0.5, size = 18),
                   axis.title = element_text(size = 20),
+                  axis.text = element_text(size = 12),
                   strip.text = element_text(size = 12),
                   plot.caption = element_text(size = 10),
                   legend.text = element_text(size = 12),
@@ -33,19 +34,22 @@ df_final_1 <-
                values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
-                              method == 'p_pheWAS_meta' ~ 'PheWAS',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
                               method == 'p_score' ~ 'mixWAS (Score Only)',
                               method == 'p_acat' ~ 'ACAT of Score P-Values',
                               method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
                               method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
                               method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
-                              method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
-                              method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
   )) %>%
-  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS', 'PheWAS Meta',
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
                                 'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
   mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>%
   mutate('direction' = gsub('\\s+--','', paste(direction_bin, direction_con))) %>%
   mutate('direction' = case_when(direction == 'Same Positive Same Positive' ~ 'Same Direction',
@@ -62,13 +66,12 @@ df_final_1 <-
   mutate('min_beta' = min(max_beta_bin)) %>%
   filter(max_beta_bin == min_beta) %>%
   ungroup() %>%
-  filter(method %in% c('mixWAS', 'PheWAS', 'Oracle'))
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen', 'Oracle'))
 
 ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
   facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
@@ -94,19 +97,22 @@ df_final_2 <-
                values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
-                              method == 'p_pheWAS_meta' ~ 'PheWAS',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
                               method == 'p_score' ~ 'mixWAS (Score Only)',
                               method == 'p_acat' ~ 'ACAT of Score P-Values',
                               method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
                               method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
                               method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
-                              method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
-                              method == 'p_asset_meta' ~ 'ASSET Meta (Subset Search)'
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
   )) %>%
-  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS', 'PheWAS Meta',
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
                                 'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET Meta (Subset Search)', 'Oracle')) %>%
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
   mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>%
   mutate('direction' = gsub('\\s+--','', paste(direction_bin, direction_con))) %>%
   mutate('direction' = case_when(direction == 'Same Positive Same Positive' ~ 'Same Direction',
@@ -123,13 +129,13 @@ df_final_2 <-
   mutate('min_beta' = min(max_beta_bin)) %>%
   filter(max_beta_bin == min_beta) %>%
   ungroup() %>%
-  filter(method %in% c('mixWAS', 'PheWAS', 'Oracle'))
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen', 'Oracle'))
 
 ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
   facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
+  # scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
@@ -204,7 +210,7 @@ bind_rows(
     pivot_longer(cols = starts_with('Y'),
                  names_to = 'phenotype2',
                  values_to = 'correlation')
-  ) %>%
+) %>%
   mutate('sigma' = fct_relevel(sigma,
                                'Positive Phenotype Correlation',
                                'No Phenotype Correlation',
@@ -234,19 +240,22 @@ df2 <-
                values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
                               method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
-                              method == 'p_pheWAS_meta' ~ 'PheWAS',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
                               method == 'p_score' ~ 'mixWAS (Score Only)',
                               method == 'p_acat' ~ 'ACAT of Score P-Values',
                               method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
                               method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
                               method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
-                              method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
-                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)'
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
   )) %>%
-  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'Score', 'ACAT of Score P-Values', 'PheWAS', 'PheWAS Meta',
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
                                 'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET (Subset Search)', 'Oracle')) %>%
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
   mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
@@ -257,7 +266,7 @@ df2 <-
   mutate('min_beta' = min(max_beta_bin)) %>%
   filter(max_beta_bin == min_beta) %>%
   ungroup() %>%
-  filter(method %in% c('mixWAS', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df2, aes(x = max_beta_bin, y = power)) +
   facet_grid(direction~sparsity, labeller = label_wrap_gen(width = 20)) +
@@ -285,20 +294,23 @@ df3 <-
                names_to = 'method',
                values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
-                              method == 'p_pheWAS_mega' ~ 'PheWAS',
-                              method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
+                              method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
                               method == 'p_score' ~ 'mixWAS (Score Only)',
                               method == 'p_acat' ~ 'ACAT of Score P-Values',
                               method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
                               method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
                               method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
-                              method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
-                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)'
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
   )) %>%
-  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS', 'PheWAS Meta',
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
                                 'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET (Subset Search)', 'Oracle')) %>%
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
   mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
@@ -309,7 +321,7 @@ df3 <-
   mutate('min_beta' = min(max_beta_bin)) %>%
   filter(max_beta_bin == min_beta) %>%
   ungroup() %>%
-  filter(method %in% c('mixWAS', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df3, aes(x = max_beta_bin, y = power)) +
   facet_grid(direction~sparsity, scales = 'free_x', labeller = label_wrap_gen(width = 20)) +
@@ -352,20 +364,23 @@ df4 <-
                names_to = 'method',
                values_to = 'power') %>%
   mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
-                              method == 'p_pheWAS_mega' ~ 'PheWAS',
-                              method == 'p_pheWAS_meta' ~ 'PheWAS Meta',
+                              method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
                               method == 'p_score' ~ 'mixWAS (Score Only)',
                               method == 'p_acat' ~ 'ACAT of Score P-Values',
                               method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
                               method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
                               method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
-                              method == 'p_pheWAS_meta_acat_p' ~ 'ACAT of PheWAS Meta P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
                               method == 'p_oracle_uncorrelated' ~ 'Oracle',
-                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)'
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
   )) %>%
-  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS', 'PheWAS Meta',
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
                                 'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
-                                'ACAT of PheWAS Mega P-Values',  'ACAT of PheWAS Meta P-Values', 'ASSET (Subset Search)', 'Oracle')) %>%
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
   mutate('sparsity' = fct_reorder(paste(n_true_bin, 'Non-Null Phenotypes'), n_true_bin)) %>%
   mutate('direction' = gsub('\\s+--','', direction_bin)) %>%
   mutate('direction' = case_when(direction == 'Same Positive' ~ 'Same Direction (Positive)',
@@ -376,7 +391,7 @@ df4 <-
   mutate('min_beta' = min(max_beta_bin)) %>%
   filter(max_beta_bin == min_beta) %>%
   ungroup() %>%
-  filter(method %in% c('mixWAS', 'PheWAS', 'ASSET (Subset Search)', 'Oracle'))
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'ASSET (Subset Search)', 'Oracle'))
 
 ggplot(df4, aes(x = max_beta_bin, y = power)) +
   facet_grid(direction~sparsity, scales = 'free_x', labeller = label_wrap_gen(width = 20)) +
@@ -406,3 +421,65 @@ as_tibble(params$Sigma) %>%
        fill = 'Correlation')
 ggsave('paper_figures/correlation_simulation_4.png', width = 16/2, height = 9/2)
 
+
+### Simulation 5 (MAR)
+df_sims <-
+  bind_rows(
+    read_csv('outputs/v3/simulation_run_v3_mar_1/combined.csv') %>% mutate('sigma' = 'Positive Phenotype Correlation'),
+    read_csv('outputs/v3/simulation_run_v3_mar_2/combined.csv') %>% mutate('sigma' = 'No Phenotype Correlation'),
+    read_csv('outputs/v3/simulation_run_v3_mar_3/combined.csv') %>% mutate('sigma' = 'Negative Phenotype Correlation')
+  )
+
+df_final_mar <-
+  df_sims %>%
+  pivot_longer(cols = starts_with('p_'),
+               names_to = 'method',
+               values_to = 'power') %>%
+  mutate('method' = case_when(method == 'p_snp' ~ 'mixWAS',
+                              method == 'p_pheWAS_mega' ~ 'PheWAS Mega',
+                              method == 'p_pheWAS_meta' ~ 'PheWAS (min P)',
+                              method == 'p_score' ~ 'mixWAS (Score Only)',
+                              method == 'p_acat' ~ 'ACAT of Score P-Values',
+                              method == 'p_pheWAS_mega_acat' ~ 'PheWAS Mega ACAT',
+                              method == 'p_pheWAS_meta_acat' ~ 'PheWAS Meta ACAT',
+                              method == 'p_pheWAS_mega_acat_p' ~ 'ACAT of PheWAS Mega P-Values',
+                              method == 'p_pheWAS_meta_acat_p' ~ 'PheWAS (ACAT)',
+                              method == 'p_oracle_uncorrelated' ~ 'Oracle',
+                              method == 'p_asset_meta' ~ 'ASSET (Subset Search)',
+                              method == 'p_multiphen' ~ 'MultiPhen',
+                              method == 'p_pheWAS_hmp' ~ 'PheWAS (HMP)'
+  )) %>%
+  mutate('method' = fct_relevel(method, 'mixWAS', 'mixWAS (Score Only)', 'ACAT of Score P-Values', 'PheWAS (min P)', 'PheWAS Mega',
+                                'PheWAS Mega ACAT', 'PheWAS Meta ACAT',
+                                'ACAT of PheWAS Mega P-Values',  'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen',
+                                'ASSET (Subset Search)', 'Oracle')) %>%
+  mutate('sparsity' = fct_reorder(paste(n_true_bin + n_true_con, 'Non-Null Phenotypes'), n_true_bin + n_true_con)) %>%
+  mutate('direction' = gsub('\\s+--','', paste(direction_bin, direction_con))) %>%
+  mutate('direction' = case_when(direction == 'Same Positive Same Positive' ~ 'Same Direction',
+                                 direction == 'Same Positive Opposite' ~ 'Opposite Direction',
+                                 direction == 'Same Positive Same Negative' ~ 'Opposite Direction')) %>%
+  mutate('direction' = fct_relevel(direction,
+                                   'Same Direction',
+                                   'Opposite Direction'),
+         'sigma' = fct_relevel(sigma,
+                               'Positive Phenotype Correlation',
+                               'No Phenotype Correlation',
+                               'Negative Phenotype Correlation')) %>%
+  group_by(method, power, sigma, sparsity) %>%
+  mutate('min_beta' = min(max_beta_bin)) %>%
+  filter(max_beta_bin == min_beta) %>%
+  ungroup() %>%
+  filter(method %in% c('mixWAS', 'PheWAS (min P)', 'PheWAS (ACAT)', 'PheWAS (HMP)', 'MultiPhen', 'Oracle'))
+
+ggplot(df_final_mar, aes(x = max_beta_bin, y = power)) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(limits = c(0, 0.2)) +
+  labs(x = expression(paste('Effect Size (', beta, ')')),
+       y = 'Power',
+       title = 'Power for Cross-Phenotype Association Test',
+       subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevelance: 30% | MAR Outcomes',
+       color = '')
+
+ggsave('paper_figures/simulation_5.png', width = 16/1.2, height = 9/1.2)

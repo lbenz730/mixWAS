@@ -542,7 +542,7 @@ ggplot(df_final_het, aes(x = max_beta_bin, y = power)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
-       subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevelance: 30% | Heterogeneous Covariate Distributions by Site',
+       subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevelance: 30%\nHeterogeneous Covariate Distributions by Site',
        color = '')
 
 ggsave('paper_figures/simulation_6.png', width = 16/1.2, height = 9/1.2)

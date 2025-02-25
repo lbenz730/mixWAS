@@ -31,7 +31,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = F,
-               'missingness' = 'mcar')
+               'missingness' = 'mcar',
+               'covariate_dist' = 'same')
 
 grain <- 40
 beta <- build_beta(seq(0.01, 0.35, length.out = grain), n = 4, by = 1, start = 1)
@@ -99,7 +100,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = F,
-               'missingness' = 'mcar')
+               'missingness' = 'mcar',
+               'covariate_dist' = 'same')
 
 grain <- 40
 beta <- build_beta(seq(0.01, 0.35, length.out = grain), n = 4, by = 1, start = 1)
@@ -167,7 +169,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = F,
-               'missingness' = 'mcar')
+               'missingness' = 'mcar',
+               'covariate_dist' = 'same')
 
 grain <- 30
 beta <- build_beta(seq(0.01, 0.6, length.out = grain), n = 8, by = 3, start = 2)
@@ -207,7 +210,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = F,
-               'missingness' = 'mcar')
+               'missingness' = 'mcar',
+               'covariate_dist' = 'same')
 
 grain <- 30
 beta <- build_beta(seq(0.01, 0.6, length.out = grain), n = 8, by = 3, start = 2)
@@ -247,7 +251,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = T,
-               'missingness' = 'mcar')
+               'missingness' = 'mcar',
+               'covariate_dist' = 'same')
 
 grain <- 30
 beta <- build_beta(seq(0.01, 0.6, length.out = grain), n = 8, by = 3, start = 2)
@@ -288,7 +293,8 @@ params <- list('num_sites' = 5,
                'flip_y' = F,
                'intercept_only' = F,
                'healthy_controls' = F,
-               'missingness' = 'mar')
+               'missingness' = 'mar',
+               'covariate_dist' = 'same')
 
 grain <- 40
 beta <- build_beta(seq(0.01, 0.35, length.out = grain), n = 4, by = 1, start = 1)
@@ -336,3 +342,73 @@ sim_same_sign_3_inputs <- list('params' = params,
                                'beta_con' = beta_con)
 
 write_rds(sim_same_sign_3_inputs, 'inputs/v3/simulation_run_v3_mar_3.rds')
+
+
+
+### Simulation 6: Re-run Sim 1 but different covariate distributions by site
+### Same Dir Sims
+params <- list('num_sites' = 5,
+               'n_k' = rep(1000, 5),
+
+               'q' = 8,
+               'q_k' = c(8,7,6,5,8),
+               'q_bin' = 4,
+
+               'num_pca' = rep(4, 5),
+               'na_freq' = 0.10,
+               'maf' = 0.20,
+               'prevalence' = 0.30,
+
+               'rm_gender' = F,
+               'flip_y' = F,
+               'intercept_only' = F,
+               'healthy_controls' = F,
+               'missingness' = 'mar',
+               'covariate_dist' = 'diff')
+
+grain <- 40
+beta <- build_beta(seq(0.01, 0.35, length.out = grain), n = 4, by = 1, start = 1)
+ix_1 <- ( apply(beta, 1, function(x) sum(x != 0)) == 1 )
+ix_2 <- ( apply(beta, 1, function(x) sum(x != 0)) == 2 )
+ix_3 <- ( apply(beta, 1, function(x) sum(x != 0)) == 3 )
+beta_opp <- beta
+beta_opp[, c(2,4)]  <- beta_opp[, c(2,4)] * -1
+beta_opp[ix_1, 1] <- -1 * beta_opp[ix_1, 1]
+beta_con <- beta[!ix_3,]
+beta_bin <- beta[!ix_2,]
+
+Sigma <- matrix(0, nrow = 8, ncol = 8)
+Sigma[1:4, 1:4] <- 0.4
+Sigma[5:8, 5:8] <- 0.4
+diag(Sigma) <- 1
+params$Sigma <- Sigma
+
+sim_same_sign_1_inputs <- list('params' = params,
+                               'beta_bin' = beta_bin,
+                               'beta_con' = beta_con)
+
+write_rds(sim_same_sign_1_inputs, 'inputs/v3/simulation_run_v3_heterogeneity_1.rds')
+
+### No Correlation
+Sigma <- matrix(0, nrow = 8, ncol = 8)
+diag(Sigma) <- 1
+params$Sigma <- Sigma
+
+sim_same_sign_2_inputs <- list('params' = params,
+                               'beta_bin' = beta_bin,
+                               'beta_con' = beta_con)
+
+write_rds(sim_same_sign_2_inputs, 'inputs/v3/simulation_run_v3_heterogeneity_2.rds')
+
+### Negative Correlation
+Sigma <- matrix(0, nrow = 8, ncol = 8)
+Sigma[1:4, 1:4] <- -0.3
+Sigma[5:8, 5:8] <- -0.3
+diag(Sigma) <- 1
+params$Sigma <- Sigma
+
+sim_same_sign_3_inputs <- list('params' = params,
+                               'beta_bin' = beta_bin,
+                               'beta_con' = beta_con)
+
+write_rds(sim_same_sign_3_inputs, 'inputs/v3/simulation_run_v3_heterogeneity_3.rds')

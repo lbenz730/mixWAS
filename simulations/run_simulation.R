@@ -29,6 +29,7 @@ run_simulation <- function(params, beta_bin, beta_con, n_sims, alpha = 0.05, ver
 
                                                   healthy_controls = params$healthy_controls,
                                                   missingness = params$missingness,
+                                                  covariate_dist = params$covariate_dist,
 
                                                   sim_id = .x),
                          .options = furrr_options(seed = future_seeds[1]))

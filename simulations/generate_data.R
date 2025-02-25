@@ -41,6 +41,8 @@ logit <- function(p) {
 ###                   case status (1) for at least one of the phenotypes
 ###
 ### Missingness (default = 'mcar', alternative option of 'mar')
+### covariate_dist (default = same; there may be differential effects but the covariate
+###     distributions is the same across same. 'different' means they are not the same across sites
 
 
 
@@ -54,7 +56,8 @@ generate_data <- function(num_sites, n_k,
                           rm_gender = F,
                           Sigma = NULL,
                           healthy_controls = F,
-                          missingness = 'mcar') {
+                          missingness = 'mcar',
+                          covariate_dist = 'same') {
 
   ### Number of continuous covariates
   q_con <- q - q_bin
@@ -115,18 +118,49 @@ generate_data <- function(num_sites, n_k,
 
 
   ### Covariates
-  covariates <-
-    map2(n_k, num_pca, function(n, nc) {
-      map_dfc(1:nc, ~{
-        df <-
-          tibble('z' = rnorm(n)) %>%
-          set_names(paste0('PC', .x))
-      }) %>%
-        mutate('age_centered' = rnorm(n, mean = 0, sd = 15), ### Centered age
-               'gender' =  rbinom(n, 1, 0.5)) %>%
-        select(-any_of(rm_vars)) %>% ### remove gender or all variables
-        as.matrix()
-    })
+  if(covariate_dist == 'same') {
+    covariates <-
+      map2(n_k, num_pca, function(n, nc) {
+        map_dfc(1:nc, ~{
+          df <-
+            tibble('z' = rnorm(n)) %>%
+            set_names(paste0('PC', .x))
+        }) %>%
+          mutate('age_centered' = rnorm(n, mean = 0, sd = 15), ### Centered age
+                 'gender' =  rbinom(n, 1, 0.5)) %>%
+          select(-any_of(rm_vars)) %>% ### remove gender or all variables
+          as.matrix()
+      })
+
+  } else {
+    gender_prob <- runif(num_sites, 0.3, 0.7)
+    age_dist <- ifelse(runif(num_sites) <= 0.5, 'normal', 'gamma')
+    age_sd <- runif(num_sites, 12, 18)
+
+    covariates <-
+      pmap(list(1:num_sites, n_k, num_pca), function(site_id, n, nc) {
+
+        if(age_dist[site_id] == 'normal') {
+          age_c <- rnorm(n, mean = 0, sd = age_sd[site_id])
+        } else {
+          a <- 5
+          b <- age_sd[site_id]/sqrt(a)
+          age_c <- rgamma(n, shape = a, scale = b) - a*b
+        }
+
+        map_dfc(1:nc, ~{
+          df <-
+            tibble('z' = rnorm(n)) %>%
+            set_names(paste0('PC', .x))
+        }) %>%
+          mutate('age_centered' = age_c, ### Centered age
+                 'gender' =  rbinom(n, 1, gender_prob[site_id])) %>%
+          select(-any_of(rm_vars)) %>% ### remove gender or all variables
+          as.matrix()
+
+      })
+  }
+
 
   ### Phenotypes
   phenotypes <- list()

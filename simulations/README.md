@@ -27,12 +27,12 @@ Mapping of simulation IDs to their corresponding ordering in the final version o
 |   opp_sign_1  |   Simulation 2: $\beta$ in opposite directions w/ positive residual correlation (SUPPLEMENT)   |
 |   opp_sign_2  |      Simulation 2: $\beta$ in opposite directions w/ no residual correlation  (SUPPLEMENT)     |
 |   opp_sign_3  |   Simulation 2: $\beta$ in opposite directions w/ negative residual correlation (SUPPLEMENT)   |
-|       2       |         Simulation 3: Binary Phenotypes Only, Common Variant (SUPPLEMENT)         |
-|       3       |          Simulation 4: Binary Phenotypes Only, Rare Variant (SUPPLEMENT)          |
-|       4       | Simulation 5: Binary Phenotypes Only, Healthy Controls (SUPPLEMENT) |
-|  mar_1  |      Simulation 6: $\beta$ in same direction w/ positive residual correlation w/ MAR outcomes (SUPPLEMENT)     |
-|  mar_2  |         Simulation 6: $\beta$ in same direction w/ no residual correlation w/ MAR outcomes (SUPPLEMENT)        |
-|  mar_3  |      Simulation 6: $\beta$ in same direction w/ negative residual correlation w/ MAR outcomes (SUPPLEMENT)    |
-|  heterogeneity_1  |      Simulation 7: $\beta$ in same direction w/ positive residual correlation w/ different covariate distributions by site (SUPPLEMENT)   |
-|  heterogeneity_2  |         Simulation 7: $\beta$ in same direction w/ no residual correlation w/ w/ different covariate distributions by site(SUPPLEMENT)    |
-|  heterogeneity_3  |      Simulation 7: $\beta$ in same direction w/ negative residual correlation w/ different covariate distributions by site (SUPPLEMENT)    |
+|       2       |         Simulation 3a: Binary Phenotypes Only, Common Variant (SUPPLEMENT)         |
+|       3       |          Simulation 4b: Binary Phenotypes Only, Rare Variant (SUPPLEMENT)          |
+|       4       | Simulation 4: Binary Phenotypes Only, Healthy Controls (SUPPLEMENT) |
+|  mar_1  |      Simulation 5: $\beta$ in same direction w/ positive residual correlation w/ MAR outcomes (SUPPLEMENT)     |
+|  mar_2  |         Simulation 5: $\beta$ in same direction w/ no residual correlation w/ MAR outcomes (SUPPLEMENT)        |
+|  mar_3  |      Simulation 5: $\beta$ in same direction w/ negative residual correlation w/ MAR outcomes (SUPPLEMENT)    |
+|  heterogeneity_1  |      Simulation 6: $\beta$ in same direction w/ positive residual correlation w/ different covariate distributions by site (SUPPLEMENT)   |
+|  heterogeneity_2  |         Simulation 6: $\beta$ in same direction w/ no residual correlation w/ w/ different covariate distributions by site(SUPPLEMENT)    |
+|  heterogeneity_3  |      Simulation 6: $\beta$ in same direction w/ negative residual correlation w/ different covariate distributions by site (SUPPLEMENT)    |

@@ -545,4 +545,4 @@ ggplot(df_final_het, aes(x = max_beta_bin, y = power)) +
        subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevelance: 30%\nHeterogeneous Covariate Distributions by Site',
        color = '')
 
-ggsave('paper_figures/simulation_6.png', width = 16/1.2, height = 9/1.2)
+ggsave('paper_figures/simulation_6.png', width = 16, height = 9)

@@ -76,10 +76,23 @@ ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
-       subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevelance: 30%',
+       subtitle = 'Mixed Datatype Phenotypes | Same Direction Effects (Positive) | MAF: 20% | Prevalence: 30%',
        color = '')
 
 ggsave('paper_figures/final_simulation_same.png', width = 16/1.2, height = 9/1.2)
+
+p1 <-
+  ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(limits = c(0, 0.2)) +
+  labs(x = expression(paste('Effect Size (', beta, ')')),
+       y = 'Power',
+       # title = 'Power for Cross-Phenotype Association Test',
+       subtitle = 'Same Direction Effects',
+       tag = 'A)',
+       color = '')
 
 
 ### Final 2: Opp Signs
@@ -140,11 +153,31 @@ ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        title = 'Power for Cross-Phenotype Association Test',
-       subtitle = 'Mixed Datatype Phenotypes | Opposite Direction Effects (Continuous Phenotypes) | MAF: 20% | Prevelance: 30%',
+       subtitle = 'Mixed Datatype Phenotypes | Opposite Direction Effects (Continuous Phenotypes) | MAF: 20% | Prevalence: 30%',
        color = '')
 
 ggsave('paper_figures/final_simulation_opp.png', width = 16/1.2, height = 9/1.2)
 
+p2 <-
+  ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
+  geom_line(aes(col = method)) +
+  scale_y_continuous(labels = scales::percent) +
+  # scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
+  scale_x_continuous(limits = c(0, 0.2)) +
+  labs(x = expression(paste('Effect Size (', beta, ')')),
+       y = 'Power',
+       # title = 'Power for Cross-Phenotype Association Test',
+       subtitle = 'Opposite Direction Effects',
+       tag = 'B)',
+       color = '')
+
+(p1/p2) +
+  plot_layout(axes = 'collect',
+              guides = 'collect'
+              ) +
+  plot_annotation(title = 'Power for Cross-Phenotype Association Test\nMixed Datatype Phenotypes | MAF: 20% | Prevalence: 30%')
+ggsave('paper_figures/simulation_1.png', height = 18/1.2, width = 16/1.2)
 
 ### Correlation Matrix
 same_sim_inputs1 <- read_rds('inputs/v3/simulation_run_v3_same_sign_1.rds')

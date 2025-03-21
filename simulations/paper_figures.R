@@ -174,9 +174,9 @@ p2 <-
 
 (p1/p2) +
   plot_layout(axes = 'collect',
-              guides = 'collect'
-              ) +
-  plot_annotation(title = 'Power for Cross-Phenotype Association Test\nMixed Datatype Phenotypes | MAF: 20% | Prevalence: 30%')
+              guides = 'collect') +
+  plot_annotation(title = 'Power for Cross-Phenotype Association Test',
+                  subtitle = 'Mixed Datatype Phenotypes | MAF: 20% | Prevalence: 30%')
 ggsave('paper_figures/simulation_1.png', height = 18/1.2, width = 16/1.2)
 
 ### Correlation Matrix

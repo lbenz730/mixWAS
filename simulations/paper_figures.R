@@ -80,10 +80,11 @@ ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/final_simulation_same.png', width = 16/1.2, height = 9/1.2)
+ggsave('paper_figures/final_simulation_same.pdf', width = 16/1.2, height = 9/1.2)
 
 p1 <-
   ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 10)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(limits = c(0, 0.2)) +
@@ -92,7 +93,18 @@ p1 <-
        # title = 'Power for Cross-Phenotype Association Test',
        subtitle = 'Same Direction Effects',
        tag = 'A)',
-       color = '')
+       color = '') +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 24),
+        panel.spacing = unit(0.8, "lines"),
+        plot.subtitle = element_text(hjust = 0.5, size = 20),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16),
+        plot.tag = element_text(size = 24),
+        strip.text = element_text(size = 16),
+        plot.caption = element_text(size = 10),
+        legend.text = element_text(size = 16),
+        legend.position = "bottom")
 
 
 ### Final 2: Opp Signs
@@ -157,10 +169,11 @@ ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/final_simulation_opp.png', width = 16/1.2, height = 9/1.2)
+ggsave('paper_figures/final_simulation_opp.pdf', width = 16/1.2, height = 9/1.2)
 
 p2 <-
   ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 20)) +
+  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 10)) +
   geom_line(aes(col = method)) +
   scale_y_continuous(labels = scales::percent) +
   # scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
@@ -170,7 +183,18 @@ p2 <-
        # title = 'Power for Cross-Phenotype Association Test',
        subtitle = 'Opposite Direction Effects',
        tag = 'B)',
-       color = '')
+       color = '') +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 24),
+        plot.subtitle = element_text(hjust = 0.5, size = 20),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16),
+        strip.text = element_text(size = 16),
+        plot.tag = element_text(size = 24),
+        panel.spacing = unit(0.8, "lines"),
+        plot.caption = element_text(size = 10),
+        legend.text = element_text(size = 16),
+        legend.position = "bottom")
 
 (p1/p2) +
   plot_layout(axes = 'collect',
@@ -178,6 +202,7 @@ p2 <-
   plot_annotation(title = 'Power for Cross-Phenotype Association Test',
                   subtitle = 'Mixed Datatype Phenotypes | MAF: 20% | Prevalence: 30%')
 ggsave('paper_figures/simulation_1.png', height = 18/1.2, width = 16/1.2)
+ggsave('paper_figures/simulation_1.pdf', height = 18/1.2, width = 16/1.2)
 
 ### Correlation Matrix
 same_sim_inputs1 <- read_rds('inputs/v3/simulation_run_v3_same_sign_1.rds')
@@ -258,6 +283,7 @@ bind_rows(
        fill = 'Correlation')
 
 ggsave('paper_figures/correlation_simulation_main.png', height = 6, width = 9)
+ggsave('paper_figures/correlation_simulation_main.pdf', height = 6, width = 9)
 
 ### Appendix figures
 ### Simulation 2
@@ -313,7 +339,7 @@ ggplot(df2, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/simulation_2.png', width = 16/1.25, height = 9/1.25)
-
+ggsave('paper_figures/simulation_2.pdf', width = 16/1.25, height = 9/1.25)
 
 ### Simulation 3
 sim_inputs <- read_rds('inputs/v3/simulation_run_v3_3.rds')
@@ -368,6 +394,7 @@ ggplot(df3, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/simulation_3.png', width = 16/1.25, height = 9/1.25)
+ggsave('paper_figures/simulation_3.pdf', width = 16/1.25, height = 9/1.25)
 
 as_tibble(params$Sigma) %>%
   set_names(paste0('Y', 1:8)) %>%
@@ -383,7 +410,7 @@ as_tibble(params$Sigma) %>%
        y = '',
        fill = 'Correlation')
 ggsave('paper_figures/correlation_simulation_3.png', width = 16/2, height = 9/2)
-
+ggsave('paper_figures/correlation_simulation_3.pdf', width = 16/2, height = 9/2)
 
 ### Simulation 4
 sim_inputs <- read_rds('inputs/v3/simulation_run_v3_4.rds')
@@ -438,6 +465,7 @@ ggplot(df4, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/simulation_4.png', width = 16/1.25, height = 9/1.25)
+ggsave('paper_figures/simulation_4.pdf', width = 16/1.25, height = 9/1.25)
 
 as_tibble(params$Sigma) %>%
   set_names(paste0('Y', 1:8)) %>%
@@ -453,6 +481,7 @@ as_tibble(params$Sigma) %>%
        y = '',
        fill = 'Correlation')
 ggsave('paper_figures/correlation_simulation_4.png', width = 16/2, height = 9/2)
+ggsave('paper_figures/correlation_simulation_4.pdf', width = 16/2, height = 9/2)
 
 
 ### Simulation 5 (MAR)
@@ -516,7 +545,7 @@ ggplot(df_final_mar, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/simulation_5.png', width = 16/1.2, height = 9/1.2)
-
+ggsave('paper_figures/simulation_5.pdf', width = 16/1.2, height = 9/1.2)
 
 ### Simulation 6 (Different Covariate Distributions)
 df_sims <-
@@ -579,3 +608,4 @@ ggplot(df_final_het, aes(x = max_beta_bin, y = power)) +
        color = '')
 
 ggsave('paper_figures/simulation_6.png', width = 16, height = 9)
+ggsave('paper_figures/simulation_6.pdf', width = 16, height = 9)

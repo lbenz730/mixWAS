@@ -83,28 +83,31 @@ ggsave('paper_figures/final_simulation_same.png', width = 16/1.2, height = 9/1.2
 ggsave('paper_figures/final_simulation_same.pdf', width = 16/1.2, height = 9/1.2)
 
 p1 <-
-  ggplot(df_final_1, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 10)) +
-  geom_line(aes(col = method)) +
+  df_final_1 %>%
+  mutate('sigma' = gsub('Phenotype Correlation', '\nCorrelation', sigma)) %>%
+  ggplot(aes(x = max_beta_bin, y = power)) +
+  facet_grid(sigma~sparsity) +
+  geom_line(aes(col = method), lwd = 0.4) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        # title = 'Power for Cross-Phenotype Association Test',
-       subtitle = 'Same Direction Effects',
+       # subtitle = 'Same Direction Effects',
        tag = 'A)',
        color = '') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 24),
-        panel.spacing = unit(0.8, "lines"),
         plot.subtitle = element_text(hjust = 0.5, size = 20),
         axis.title = element_text(size = 20),
-        axis.text = element_text(size = 16),
-        plot.tag = element_text(size = 24),
-        strip.text = element_text(size = 16),
+        axis.text = element_text(size = 10),
+        strip.text.x = element_text(size = 8),
+        strip.text.y = element_text(size = 8),
+        plot.tag = element_text(size = 16),
+        panel.spacing = unit(0.8, "lines"),
         plot.caption = element_text(size = 10),
         legend.text = element_text(size = 16),
-        legend.position = "bottom")
+        legend.position = "none")
 
 
 ### Final 2: Opp Signs
@@ -172,37 +175,38 @@ ggsave('paper_figures/final_simulation_opp.png', width = 16/1.2, height = 9/1.2)
 ggsave('paper_figures/final_simulation_opp.pdf', width = 16/1.2, height = 9/1.2)
 
 p2 <-
-  ggplot(df_final_2, aes(x = max_beta_bin, y = power)) +
-  facet_grid(sigma~sparsity, labeller = label_wrap_gen(width = 10)) +
-  geom_line(aes(col = method)) +
+  df_final_2 %>%
+  mutate('sigma' = gsub('Phenotype Correlation', '\nCorrelation', sigma)) %>%
+  ggplot(aes(x = max_beta_bin, y = power)) +
+  facet_grid(sigma~sparsity) +
+  geom_line(aes(col = method), lwd = 0.4) +
   scale_y_continuous(labels = scales::percent) +
   # scale_color_manual(values = gg_color_hue(4)[c(1:2, 4)]) +
   scale_x_continuous(limits = c(0, 0.2)) +
   labs(x = expression(paste('Effect Size (', beta, ')')),
        y = 'Power',
        # title = 'Power for Cross-Phenotype Association Test',
-       subtitle = 'Opposite Direction Effects',
+       # subtitle = 'Opposite Direction Effects',
        tag = 'B)',
        color = '') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 24),
         plot.subtitle = element_text(hjust = 0.5, size = 20),
         axis.title = element_text(size = 20),
-        axis.text = element_text(size = 16),
-        strip.text = element_text(size = 16),
-        plot.tag = element_text(size = 24),
+        axis.text = element_text(size = 10),
+        strip.text.x = element_text(size = 8),
+        strip.text.y = element_text(size = 8),
+        plot.tag = element_text(size = 16),
         panel.spacing = unit(0.8, "lines"),
         plot.caption = element_text(size = 10),
-        legend.text = element_text(size = 16),
+        legend.text = element_text(size = 12),
         legend.position = "bottom")
 
 (p1/p2) +
   plot_layout(axes = 'collect',
-              guides = 'collect') +
-  plot_annotation(title = 'Power for Cross-Phenotype Association Test',
-                  subtitle = 'Mixed Datatype Phenotypes | MAF: 20% | Prevalence: 30%')
-ggsave('paper_figures/simulation_1.png', height = 18/1.2, width = 16/1.2)
-ggsave('paper_figures/simulation_1.pdf', height = 18/1.2, width = 16/1.2)
+              guides = 'collect')
+ggsave('paper_figures/simulation_1.png', height = 8, width = 6.5, units = 'in')
+ggsave('paper_figures/simulation_1.pdf', height = 8, width = 6.5, units = 'in')
 
 ### Correlation Matrix
 same_sim_inputs1 <- read_rds('inputs/v3/simulation_run_v3_same_sign_1.rds')
